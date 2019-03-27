@@ -1,4 +1,4 @@
-# basicaws
+# AWS RDS - connecting using Authentication Token
 
 this for to connect AWS-RDS Postgres instance with auth token (instead of password)
 
