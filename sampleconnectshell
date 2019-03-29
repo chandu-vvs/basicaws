@@ -1,0 +1,33 @@
+#   goal : read s3 dml file as a input and execute it in postgres
+#        : use auth token approach to avoid hard coding of password
+#        : use parameter store for configurations and properties
+#        : used jq for easy json parsing, can use your own favorite to parse
+#        : dont forget to IAM policy to read ssm gerparameters for EC2 role
+
+#presigned or s3 url with bucket name and key
+S3FILEURL=$1
+
+#generate some random number to use as temp file name
+export randomfilename="$RANDOM.sql"
+
+#copy the file to local
+aws s3 cp "$S3FILEURL" randomfilename
+
+#execute the file
+
+#read from parameter store aka ssm
+
+export RDSHOST="$( ( aws ssm get-parameters --names RDSURL --region us-east-1 ) | jq -r '.Parameters[0].Value') "
+export USERNAME="$( ( aws ssm get-parameters --names RDSUSERNAME --region us-east-1 ) | jq -r '.Parameters[0].Value') "
+export DBNAME="$( ( aws ssm get-parameters --names RDSDBNAME --region us-east-1 ) | jq -r '.Parameters[0].Value') "
+
+#generate auth token to avoid the RDS password hardcoding / good way parameter store
+export PGPASSWORD="$( aws rds generate-db-auth-token --hostname $RDSHOST --port 5432 --username $USERNAME --region us-east-1 )"
+
+echo $RDSHOST
+echo $USERNAME
+echo $DBNAME
+echo $PGPASSWORD
+echo $randomfilename
+
+psql "host=$RDSHOST dbname=$DBNAME user=$USERNAME" -f $randomfilename
