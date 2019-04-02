@@ -7,9 +7,9 @@ Step 1:
 1. create the AWS-RDS Postgres instance
   
     a. make sure connect from Public accessibility is set to true, if you are connecting beyond vpc (generally yes for testing)
-    b. make sure you enable IAM db authentication to true
+    b. make sure you enable IAM db authentication to true **(strange behaviour, sometimes it works only if it is re-enabled - disable IAM auth and enable it again, pls try if it is not working for you)
 
-2. Create a EC2 instance 
+2. Create a EC2 instance (linux2 Ec2 instance)
 
    Connect to AWS-RDS instance (either through psql if your EC2 already up and running or via pgadmin client)
    
@@ -61,12 +61,14 @@ Step 1:
 6. in EC2 instance, create .sh file
 
 RDSHOST=xxxx.xxxx.xxxx.rds.amazonaws.com
+
 USERNAME=xxxxtestuser
-#FILENAME=$1
+
 DBNAME=dbname
+
 export PGPASSWORD="$( aws rds generate-db-auth-token --hostname $RDSHOST --port 5432 --username $USERNAME --region regioname )"
+
 psql "host=$RDSHOST dbname=$DBNAME user=$USERNAME"
-#psql "host=$RDSHOST dbname=$DBNAME user=$USERNAME" -f "$FILENAME"
 
 7. run the script file sh scriptfile.sh
 
