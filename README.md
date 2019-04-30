@@ -27,6 +27,8 @@ Step 1:
     
     c. exit the psql with \q
     
+    d. also make sure to GRANT privilages to set role from xxxxtestuser to apptestuser's by running "grant  appusername to xxxxtestuser" [optional step]
+    
 4. create the IAM role 
 
     a. add the AmazonRDSFullAccess to new role
@@ -73,3 +75,7 @@ psql "host=$RDSHOST dbname=$DBNAME user=$USERNAME"
 7. run the script file sh scriptfile.sh
 
 8. if you want to run this with sql file, use the $filename option in script
+
+9. NOTE :: make sure to run following commands while executing commands with rds_iam user (created in step 3)
+      a) add the "set role  appusername' before all executing ddl or dml statements
+      b) grant  appusername to rds_iamuser [created in step 3]  <== at compile time at step 3
